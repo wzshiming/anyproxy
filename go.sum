@@ -1,9 +1,9 @@
+github.com/wzshiming/cmux v0.1.0 h1:MOsZjdVkcuptYBysE85x2ng/ajVSwwUfRLG6GL2IBNg=
+github.com/wzshiming/cmux v0.1.0/go.mod h1:B5bzinbIDlFcjtWhdEiEdMWMp41bbd2a7/ghkMuKTUI=
 github.com/wzshiming/crun v0.3.3 h1:Vy3kp+KKfNnkxM+thmiv6HkSsviupMZEI31HtoVZpeY=
 github.com/wzshiming/crun v0.3.3/go.mod h1:iYiD/hU/91oBohiLF/F5nGoLlDsHCnp1FCh8WozXayk=
 github.com/wzshiming/httpproxy v0.3.1 h1:nCvvvsxlUQj9M7z5tA4aGptZGI1epDEL+sMo9vlPwE8=
 github.com/wzshiming/httpproxy v0.3.1/go.mod h1:3klJUWMVtAFnHcLB1dTyijHLeAVcoSxbvLC7AQH5v4k=
-github.com/wzshiming/shunt v0.1.0 h1:GIEoMdI2RIKZmLyYGtqDTpb2Cn1JvvSww0eLfEQr4BM=
-github.com/wzshiming/shunt v0.1.0/go.mod h1:LbJ4BFzOCELnlc387Dv/VSyU3LVWTqdzEk7s8YELETk=
 github.com/wzshiming/socks4 v0.2.1 h1:kK58/JHc8XVvdTgfd1xdiEECRAkEosDj8yTKT53nFwA=
 github.com/wzshiming/socks4 v0.2.1/go.mod h1:YEPfhjf/4JezwdTmgXZU+UX+A2KvD05quzhsUBVMNA0=
 github.com/wzshiming/socks5 v0.2.1 h1:uyfdeuxtA5M/fkbRH5PZzxz6cPX7sJEi699Y8hxisnY=

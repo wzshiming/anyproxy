@@ -7,9 +7,9 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/wzshiming/cmux"
+	"github.com/wzshiming/cmux/pattern"
 	"github.com/wzshiming/httpproxy"
-	"github.com/wzshiming/shunt"
-	"github.com/wzshiming/shunt/pattern"
 	"github.com/wzshiming/socks4"
 	"github.com/wzshiming/socks5"
 )
@@ -18,7 +18,7 @@ type AnyProxy struct {
 	Socks4 socks4.Server
 	Socks5 socks5.Server
 	Http   http.Server
-	Mux    *shunt.Mux
+	CMux   *cmux.CMux
 }
 
 type Dialer interface {
@@ -46,18 +46,12 @@ func NewAnyProxy(dial Dialer, logger *log.Logger) *AnyProxy {
 		Socks4: socks4d,
 		Socks5: socks5d,
 		Http:   httpd,
-		Mux:    shunt.NewMux(),
+		CMux:   cmux.NewCMux(),
 	}
 
-	if pattern, ok := pattern.Get("socks4"); ok {
-		proxy.Mux.HandleRegexp(pattern, &proxy.Socks4)
-	}
-
-	if pattern, ok := pattern.Get("socks5"); ok {
-		proxy.Mux.HandleRegexp(pattern, &proxy.Socks5)
-	}
-
-	proxy.Mux.NotFound(warpHttpConn{&proxy.Http})
+	proxy.CMux.HandleRegexp(pattern.Socks4, &proxy.Socks4)
+	proxy.CMux.HandleRegexp(pattern.Socks5, &proxy.Socks5)
+	proxy.CMux.NotFound(warpHttpConn{&proxy.Http})
 	return proxy
 }
 
@@ -67,7 +61,7 @@ func (s *AnyProxy) ServeConn(conn net.Conn) {
 		Conn:   conn,
 		Reader: bufio.NewReader(conn),
 	}
-	s.Mux.ServeConn(conn)
+	s.CMux.ServeConn(conn)
 }
 
 func (s *AnyProxy) ListenAndServe(network, address string) error {
