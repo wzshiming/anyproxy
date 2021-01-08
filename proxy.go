@@ -12,6 +12,8 @@ import (
 	"github.com/wzshiming/httpproxy"
 	"github.com/wzshiming/socks4"
 	"github.com/wzshiming/socks5"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 type AnyProxy struct {
@@ -25,21 +27,31 @@ type Dialer interface {
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
-func NewAnyProxy(dial Dialer, logger *log.Logger) *AnyProxy {
+type BytesPool httpproxy.BytesPool
+
+func NewAnyProxy(ctx context.Context, dial Dialer, logger *log.Logger, pool BytesPool) *AnyProxy {
 	httpd := http.Server{
+		BaseContext: func(listener net.Listener) context.Context {
+			return ctx
+		},
 		ErrorLog: logger,
-		Handler: &httpproxy.ProxyHandler{
+		Handler: h2c.NewHandler(&httpproxy.ProxyHandler{
 			Logger:    logger,
 			ProxyDial: dial.DialContext,
-		},
+			BytesPool: pool,
+		}, &http2.Server{}),
 	}
 	socks4d := socks4.Server{
+		Context:   ctx,
 		Logger:    logger,
 		ProxyDial: dial.DialContext,
+		BytesPool: pool,
 	}
 	socks5d := socks5.Server{
+		Context:   ctx,
 		Logger:    logger,
 		ProxyDial: dial.DialContext,
+		BytesPool: pool,
 	}
 
 	proxy := &AnyProxy{

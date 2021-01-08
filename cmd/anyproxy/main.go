@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"net"
@@ -17,9 +18,9 @@ func init() {
 }
 
 func main() {
-	logger := log.New(os.Stderr, "[proxy] ", log.LstdFlags)
+	logger := log.New(os.Stderr, "[any proxy] ", log.LstdFlags)
 	var dialer net.Dialer
-	svc := anyproxy.NewAnyProxy(&dialer, logger)
+	svc := anyproxy.NewAnyProxy(context.Background(), &dialer, logger, nil)
 
 	err := svc.ListenAndServe("tcp", address)
 	if err != nil {
