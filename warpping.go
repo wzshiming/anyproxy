@@ -1,7 +1,6 @@
 package anyproxy
 
 import (
-	"bufio"
 	"errors"
 	"net"
 	"net/http"
@@ -61,19 +60,10 @@ func (c *connCloser) Close() error {
 	return c.Conn.Close()
 }
 
-type connBuffReader struct {
-	net.Conn
-	*bufio.Reader
-}
-
-func (c *connBuffReader) Read(p []byte) (n int, err error) {
-	return c.Reader.Read(p)
-}
-
 type warpHttpConn struct {
-	s *http.Server
+	*http.Server
 }
 
 func (w warpHttpConn) ServeConn(conn net.Conn) {
-	w.s.Serve(newSingleConnListener(conn))
+	w.Serve(newSingleConnListener(conn))
 }

@@ -20,9 +20,19 @@ func init() {
 func main() {
 	logger := log.New(os.Stderr, "[any proxy] ", log.LstdFlags)
 	var dialer net.Dialer
-	svc := anyproxy.NewAnyProxy(context.Background(), &dialer, logger, nil)
 
-	err := svc.ListenAndServe("tcp", address)
+	matches := []string{
+		"http://" + address,
+		"socks4://" + address,
+		"socks5://" + address,
+	}
+	svc, err := anyproxy.NewAnyProxy(context.Background(), matches, &dialer, logger, nil)
+	if err != nil {
+		logger.Println(err)
+		return
+	}
+	logger.Println("listen %s", matches)
+	err = svc.ListenAndServe("tcp", address)
 	if err != nil {
 		logger.Println(err)
 	}

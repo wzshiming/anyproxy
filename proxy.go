@@ -1,82 +1,103 @@
 package anyproxy
 
 import (
-	"bufio"
 	"context"
+	"fmt"
 	"log"
 	"net"
-	"net/http"
+	"net/url"
+	"sort"
 
 	"github.com/wzshiming/cmux"
 	"github.com/wzshiming/cmux/pattern"
-	"github.com/wzshiming/httpproxy"
-	"github.com/wzshiming/socks4"
-	"github.com/wzshiming/socks5"
-	"golang.org/x/net/http2"
-	"golang.org/x/net/http2/h2c"
 )
-
-type AnyProxy struct {
-	Socks4 socks4.Server
-	Socks5 socks5.Server
-	Http   http.Server
-	CMux   *cmux.CMux
-}
 
 type Dialer interface {
 	DialContext(ctx context.Context, network, address string) (net.Conn, error)
 }
 
-type BytesPool httpproxy.BytesPool
+type AnyProxy struct {
+	proxies map[string]*Host
+}
 
-func NewAnyProxy(ctx context.Context, dial Dialer, logger *log.Logger, pool BytesPool) *AnyProxy {
-	httpd := http.Server{
-		BaseContext: func(listener net.Listener) context.Context {
-			return ctx
-		},
-		ErrorLog: logger,
-		Handler: h2c.NewHandler(&httpproxy.ProxyHandler{
-			Logger:    logger,
-			ProxyDial: dial.DialContext,
-			BytesPool: pool,
-		}, &http2.Server{}),
-	}
-	socks4d := socks4.Server{
-		Context:   ctx,
-		Logger:    logger,
-		ProxyDial: dial.DialContext,
-		BytesPool: pool,
-	}
-	socks5d := socks5.Server{
-		Context:   ctx,
-		Logger:    logger,
-		ProxyDial: dial.DialContext,
-		BytesPool: pool,
-	}
+func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.Logger, pool BytesPool) (*AnyProxy, error) {
+	proxies := map[string]*Host{}
+	for _, addr := range addrs {
+		u, err := url.Parse(addr)
+		if err != nil {
+			return nil, err
+		}
+		host := u.Host
 
+		s, err := newServer(ctx, addr, dial, logger, pool)
+		if err != nil {
+			return nil, err
+		}
+		mux, ok := proxies[host]
+		if !ok {
+			mux = &Host{
+				cmux: cmux.NewCMux(),
+			}
+		}
+		patterns := s.Patterns()
+		if patterns == nil {
+			mux.proxies = append(mux.proxies, s.ProxyURL())
+			err = mux.cmux.NotFound(s)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			mux.proxies = append(mux.proxies, s.ProxyURL())
+			for _, p := range patterns {
+				err = mux.cmux.HandlePrefix(s, pattern.Pattern[p]...)
+				if err != nil {
+					return nil, err
+				}
+			}
+		}
+		proxies[u.Host] = mux
+	}
 	proxy := &AnyProxy{
-		Socks4: socks4d,
-		Socks5: socks5d,
-		Http:   httpd,
-		CMux:   cmux.NewCMux(),
+		proxies: proxies,
 	}
-
-	proxy.CMux.HandleRegexp(pattern.Socks4, &proxy.Socks4)
-	proxy.CMux.HandleRegexp(pattern.Socks5, &proxy.Socks5)
-	proxy.CMux.NotFound(warpHttpConn{&proxy.Http})
-	return proxy
+	return proxy, nil
 }
 
-// ServeConn is used to serve a single connection.
-func (s *AnyProxy) ServeConn(conn net.Conn) {
-	conn = &connBuffReader{
-		Conn:   conn,
-		Reader: bufio.NewReader(conn),
-	}
-	s.CMux.ServeConn(conn)
+func (a *AnyProxy) Match(addr string) *Host {
+	return a.proxies[addr]
 }
 
-func (s *AnyProxy) ListenAndServe(network, address string) error {
+func (a *AnyProxy) Hosts() []string {
+	hosts := make([]string, 0, len(a.proxies))
+	for proxy := range a.proxies {
+		hosts = append(hosts, proxy)
+	}
+	sort.Strings(hosts)
+	return hosts
+}
+
+func (a *AnyProxy) ListenAndServe(network, address string) error {
+	host := a.Match(address)
+	if host == nil {
+		return fmt.Errorf("not match address %q", address)
+	}
+	return host.ListenAndServe(network, address)
+}
+
+type Host struct {
+	cmux    *cmux.CMux
+	proxies []string
+}
+
+func (h *Host) ProxyURLs() []string {
+	return h.proxies
+}
+
+func (h *Host) ServeConn(conn net.Conn) {
+	h.cmux.ServeConn(conn)
+}
+
+func (h *Host) ListenAndServe(network, address string) error {
 	listener, err := net.Listen(network, address)
 	if err != nil {
 		return err
@@ -86,6 +107,6 @@ func (s *AnyProxy) ListenAndServe(network, address string) error {
 		if err != nil {
 			return err
 		}
-		go s.ServeConn(conn)
+		go h.ServeConn(conn)
 	}
 }
