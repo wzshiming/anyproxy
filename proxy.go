@@ -10,6 +10,7 @@ import (
 
 	"github.com/wzshiming/cmux"
 	"github.com/wzshiming/cmux/pattern"
+	"golang.org/x/sync/errgroup"
 )
 
 type Dialer interface {
@@ -22,24 +23,36 @@ type AnyProxy struct {
 
 func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.Logger, pool BytesPool) (*AnyProxy, error) {
 	proxies := map[string]*Host{}
+	users := map[string][]*url.Userinfo{}
 	for _, addr := range addrs {
 		u, err := url.Parse(addr)
 		if err != nil {
 			return nil, err
 		}
-		host := u.Host
 
-		s, err := newServer(ctx, addr, dial, logger, pool)
+		unique := fmt.Sprintf("%s://%s", u.Scheme, u.Host)
+		if u.User == nil {
+			users[unique] = nil
+		} else {
+			if user, ok := users[unique]; !ok || user != nil {
+				users[unique] = append(users[unique], u.User)
+			}
+		}
+		sch, ok := schemeMap[u.Scheme]
+		if !ok {
+			return nil, fmt.Errorf("can't support scheme %q", u.Scheme)
+		}
+
+		s, patterns, err := newServer(ctx, sch, u.Host, users[unique], dial, logger, pool)
 		if err != nil {
 			return nil, err
 		}
-		mux, ok := proxies[host]
+		mux, ok := proxies[u.Host]
 		if !ok {
 			mux = &Host{
 				cmux: cmux.NewCMux(),
 			}
 		}
-		patterns := s.Patterns()
 		if patterns == nil {
 			mux.proxies = append(mux.proxies, s.ProxyURL())
 			err = mux.cmux.NotFound(s)
@@ -82,6 +95,31 @@ func (a *AnyProxy) ListenAndServe(network, address string) error {
 		return fmt.Errorf("not match address %q", address)
 	}
 	return host.ListenAndServe(network, address)
+}
+
+func (a *AnyProxy) Run(ctx context.Context) error {
+	group, ctx := errgroup.WithContext(ctx)
+	for _, address := range a.Hosts() {
+		address := address
+		host := a.Match(address)
+		if host == nil {
+			return fmt.Errorf("not match address %q", address)
+		}
+		listener, err := net.Listen("tcp", address)
+		if err != nil {
+			return err
+		}
+		group.Go(func() error {
+			for {
+				conn, err := listener.Accept()
+				if err != nil {
+					return err
+				}
+				go host.ServeConn(conn)
+			}
+		})
+	}
+	return group.Wait()
 }
 
 type Host struct {

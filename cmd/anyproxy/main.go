@@ -21,18 +21,17 @@ func main() {
 	logger := log.New(os.Stderr, "[any proxy] ", log.LstdFlags)
 	var dialer net.Dialer
 
-	matches := []string{
-		"http://" + address,
-		"socks4://" + address,
-		"socks5://" + address,
+	args := flag.Args()
+	if address != "" {
+		args = append(args, "http://"+address, "socks4://"+address, "socks5://"+address)
 	}
-	svc, err := anyproxy.NewAnyProxy(context.Background(), matches, &dialer, logger, nil)
+	svc, err := anyproxy.NewAnyProxy(context.Background(), args, &dialer, logger, nil)
 	if err != nil {
 		logger.Println(err)
 		return
 	}
-	logger.Println("listen %s", matches)
-	err = svc.ListenAndServe("tcp", address)
+	logger.Printf("listen %s", args)
+	err = svc.Run(context.Background())
 	if err != nil {
 		logger.Println(err)
 	}

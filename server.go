@@ -10,6 +10,7 @@ import (
 	"github.com/wzshiming/cmux/pattern"
 	"github.com/wzshiming/httpproxy"
 	"github.com/wzshiming/shadowsocks"
+	_ "github.com/wzshiming/shadowsocks/init"
 	"github.com/wzshiming/socks4"
 	"github.com/wzshiming/socks5"
 )
@@ -21,74 +22,110 @@ type BytesPool interface {
 	Put([]byte)
 }
 
-func newServer(ctx context.Context, addr string, dial Dialer, logger *log.Logger, pool BytesPool) (*warpPatternServer, error) {
-	u, err := url.Parse(addr)
-	if err != nil {
-		return nil, err
-	}
-	switch u.Scheme {
-	case "http":
-		s, err := httpproxy.NewSimpleServer(addr)
+type scheme int
+
+const (
+	_ scheme = iota
+	schemeHTTP
+	schemeSocks4
+	schemeSocks5
+	schemeShadowsocks
+)
+
+var schemeMap = map[string]scheme{
+	"http":        schemeHTTP,
+	"socks4":      schemeSocks4,
+	"socks4a":     schemeSocks4,
+	"socks5":      schemeSocks5,
+	"socks5h":     schemeSocks5,
+	"shadowsocks": schemeShadowsocks,
+	"ss":          schemeShadowsocks,
+}
+
+func newServer(ctx context.Context, scheme scheme, address string, users []*url.Userinfo, dial Dialer, logger *log.Logger, pool BytesPool) (serveConn, []string, error) {
+	switch scheme {
+	case schemeHTTP:
+		s, err := httpproxy.NewSimpleServer("http://" + address)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		s.Server.BaseContext = func(listener net.Listener) context.Context {
 			return ctx
 		}
+		if users != nil {
+			auth := map[string]string{}
+			for _, user := range users {
+				password, _ := user.Password()
+				auth[user.Username()] = password
+			}
+			s.Authentication = httpproxy.BasicAuthFunc(func(username, password string) bool {
+				return auth[username] == password
+			})
+		}
 		s.Server.ErrorLog = logger
 		s.ProxyDial = dial.DialContext
 		s.BytesPool = pool
-		return newWarpPatternServer(newWarpHttpProxySimpleServer(s), []string{pattern.HTTP, pattern.HTTP2}), nil
-	case "socks4", "socks4a":
-		s, err := socks4.NewSimpleServer(addr)
+		return newWarpHttpProxySimpleServer(s), []string{pattern.HTTP, pattern.HTTP2}, nil
+	case schemeSocks4:
+		s, err := socks4.NewSimpleServer("socks4://" + address)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
+		}
+		if users != nil {
+			auth := map[string]struct{}{}
+			for _, user := range users {
+				auth[user.Username()] = struct{}{}
+			}
+			s.Authentication = socks4.AuthenticationFunc(func(cmd socks4.Command, username string) bool {
+				_, ok := auth[username]
+				return ok
+			})
 		}
 		s.Context = ctx
 		s.Logger = logger
 		s.ProxyDial = dial.DialContext
 		s.BytesPool = pool
-		return newWarpPatternServer(s, []string{pattern.SOCKS4}), nil
-	case "socks5", "socks5h":
-		s, err := socks5.NewSimpleServer(addr)
+		return s, []string{pattern.SOCKS4}, nil
+	case schemeSocks5:
+		s, err := socks5.NewSimpleServer("socks5://" + address)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
+		}
+		if users != nil {
+			auth := map[string]string{}
+			for _, user := range users {
+				password, _ := user.Password()
+				auth[user.Username()] = password
+			}
+			s.Authentication = socks5.AuthenticationFunc(func(cmd socks5.Command, username, password string) bool {
+				return auth[username] == password
+			})
 		}
 		s.Context = ctx
 		s.Logger = logger
 		s.ProxyDial = dial.DialContext
 		s.BytesPool = pool
-		return newWarpPatternServer(s, []string{pattern.SOCKS5}), nil
-	case "ss", "shadowsocks":
-		s, err := shadowsocks.NewSimpleServer(addr)
+		return s, []string{pattern.SOCKS5}, nil
+	case schemeShadowsocks:
+		if len(users) != 1 {
+			return nil, nil, fmt.Errorf("shadowsocks only supports a single authentication method")
+		}
+		s, err := shadowsocks.NewSimpleServer("ss://" + address)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		s.Context = ctx
 		s.Logger = logger
 		s.ProxyDial = dial.DialContext
 		s.BytesPool = pool
-		return newWarpPatternServer(s, nil), nil
+		return s, nil, nil
 	}
-	return nil, fmt.Errorf("unsupported protocol '%s'", u.Scheme)
+	return nil, nil, fmt.Errorf("unsupported protocol %q", scheme)
 }
 
 type serveConn interface {
 	ServeConn(conn net.Conn)
 	ProxyURL() string
-}
-
-type warpPatternServer struct {
-	serveConn
-	patterns []string
-}
-
-func (p *warpPatternServer) Patterns() []string {
-	return p.patterns
-}
-
-func newWarpPatternServer(s serveConn, p []string) *warpPatternServer {
-	return &warpPatternServer{serveConn: s, patterns: p}
 }
 
 type warpHttpProxySimpleServer struct {
