@@ -9,7 +9,6 @@ import (
 	"sort"
 
 	"github.com/wzshiming/cmux"
-	"github.com/wzshiming/cmux/pattern"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -38,12 +37,8 @@ func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.L
 				users[unique] = append(users[unique], u.User)
 			}
 		}
-		sch, ok := schemeMap[u.Scheme]
-		if !ok {
-			return nil, fmt.Errorf("can't support scheme %q", u.Scheme)
-		}
 
-		s, patterns, err := newServeConn(ctx, sch, u.Scheme, u.Host, users[unique], dial, logger, pool)
+		s, patterns, err := NewServeConn(ctx, u.Scheme, u.Host, users[unique], dial, logger, pool)
 		if err != nil {
 			return nil, err
 		}
@@ -65,12 +60,7 @@ func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.L
 				return nil, err
 			}
 		} else {
-			for _, p := range patterns {
-				err = mux.cmux.HandlePrefix(s, pattern.Pattern[p]...)
-				if err != nil {
-					return nil, err
-				}
-			}
+			err = mux.cmux.HandlePrefix(s, patterns...)
 		}
 		proxies[u.Host] = mux
 	}

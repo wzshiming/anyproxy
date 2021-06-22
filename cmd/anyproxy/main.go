@@ -7,6 +7,8 @@ import (
 	"net"
 	"os"
 
+	_ "github.com/wzshiming/anyproxy/init"
+
 	"github.com/wzshiming/anyproxy"
 )
 
