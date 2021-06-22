@@ -43,7 +43,7 @@ func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.L
 			return nil, fmt.Errorf("can't support scheme %q", u.Scheme)
 		}
 
-		s, patterns, err := newServer(ctx, sch, u.Host, users[unique], dial, logger, pool)
+		s, patterns, err := newServeConn(ctx, sch, u.Scheme, u.Host, users[unique], dial, logger, pool)
 		if err != nil {
 			return nil, err
 		}
@@ -53,14 +53,18 @@ func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.L
 				cmux: cmux.NewCMux(),
 			}
 		}
+
+		if p, ok := s.(proxyURLs); ok {
+			mux.proxies = append(mux.proxies, p.ProxyURLs()...)
+		} else if p, ok := s.(proxyURL); ok {
+			mux.proxies = append(mux.proxies, p.ProxyURL())
+		}
 		if patterns == nil {
-			mux.proxies = append(mux.proxies, s.ProxyURL())
 			err = mux.cmux.NotFound(s)
 			if err != nil {
 				return nil, err
 			}
 		} else {
-			mux.proxies = append(mux.proxies, s.ProxyURL())
 			for _, p := range patterns {
 				err = mux.cmux.HandlePrefix(s, pattern.Pattern[p]...)
 				if err != nil {

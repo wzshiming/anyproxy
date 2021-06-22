@@ -5,6 +5,8 @@ import (
 	"net"
 	"net/http"
 	"sync"
+
+	"github.com/wzshiming/httpproxy"
 )
 
 var ErrNetClosing = errors.New("use of closed network connection")
@@ -58,6 +60,18 @@ type connCloser struct {
 func (c *connCloser) Close() error {
 	c.l.shutdown()
 	return c.Conn.Close()
+}
+
+type warpHttpProxySimpleServer struct {
+	*httpproxy.SimpleServer
+	warpHttpConn
+}
+
+func newWarpHttpProxySimpleServer(s *httpproxy.SimpleServer) ServeConn {
+	return warpHttpProxySimpleServer{
+		SimpleServer: s,
+		warpHttpConn: warpHttpConn{&s.Server},
+	}
 }
 
 type warpHttpConn struct {

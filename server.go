@@ -42,10 +42,10 @@ var schemeMap = map[string]scheme{
 	"ss":          schemeShadowsocks,
 }
 
-func newServer(ctx context.Context, scheme scheme, address string, users []*url.Userinfo, dial Dialer, logger *log.Logger, pool BytesPool) (serveConn, []string, error) {
+func newServeConn(ctx context.Context, scheme scheme, sch, address string, users []*url.Userinfo, dial Dialer, logger *log.Logger, pool BytesPool) (ServeConn, []string, error) {
 	switch scheme {
 	case schemeHTTP:
-		s, err := httpproxy.NewSimpleServer("http://" + address)
+		s, err := httpproxy.NewSimpleServer(sch + "://" + address)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -67,7 +67,7 @@ func newServer(ctx context.Context, scheme scheme, address string, users []*url.
 		s.BytesPool = pool
 		return newWarpHttpProxySimpleServer(s), []string{pattern.HTTP, pattern.HTTP2}, nil
 	case schemeSocks4:
-		s, err := socks4.NewSimpleServer("socks4://" + address)
+		s, err := socks4.NewSimpleServer(sch + "://" + address)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -87,7 +87,7 @@ func newServer(ctx context.Context, scheme scheme, address string, users []*url.
 		s.BytesPool = pool
 		return s, []string{pattern.SOCKS4}, nil
 	case schemeSocks5:
-		s, err := socks5.NewSimpleServer("socks5://" + address)
+		s, err := socks5.NewSimpleServer(sch + "://" + address)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -110,7 +110,7 @@ func newServer(ctx context.Context, scheme scheme, address string, users []*url.
 		if len(users) != 1 {
 			return nil, nil, fmt.Errorf("shadowsocks only supports a single authentication method")
 		}
-		s, err := shadowsocks.NewSimpleServer("ss://" + address)
+		s, err := shadowsocks.NewSimpleServer(sch + "://" + address)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -123,19 +123,14 @@ func newServer(ctx context.Context, scheme scheme, address string, users []*url.
 	return nil, nil, fmt.Errorf("unsupported protocol %q", scheme)
 }
 
-type serveConn interface {
+type ServeConn interface {
 	ServeConn(conn net.Conn)
+}
+
+type proxyURLs interface {
+	ProxyURLs() []string
+}
+
+type proxyURL interface {
 	ProxyURL() string
-}
-
-type warpHttpProxySimpleServer struct {
-	*httpproxy.SimpleServer
-	warpHttpConn
-}
-
-func newWarpHttpProxySimpleServer(s *httpproxy.SimpleServer) serveConn {
-	return warpHttpProxySimpleServer{
-		SimpleServer: s,
-		warpHttpConn: warpHttpConn{&s.Server},
-	}
 }
