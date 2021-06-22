@@ -8,6 +8,7 @@ import (
 	"os"
 
 	_ "github.com/wzshiming/anyproxy/init"
+	_ "github.com/wzshiming/anyproxy/pprof"
 
 	"github.com/wzshiming/anyproxy"
 )
@@ -23,16 +24,17 @@ func main() {
 	logger := log.New(os.Stderr, "[any proxy] ", log.LstdFlags)
 	var dialer net.Dialer
 
-	args := flag.Args()
+	addrs := flag.Args()
 	if address != "" {
-		args = append(args, "http://"+address, "socks4://"+address, "socks5://"+address)
+		addrs = append(addrs, "http://"+address, "socks4://"+address, "socks5://"+address, "pprof://"+address)
 	}
-	svc, err := anyproxy.NewAnyProxy(context.Background(), args, &dialer, logger, nil)
+
+	svc, err := anyproxy.NewAnyProxy(context.Background(), addrs, &dialer, logger, nil)
 	if err != nil {
 		logger.Println(err)
 		return
 	}
-	logger.Printf("listen %s", args)
+	logger.Printf("listen %s", addrs)
 	err = svc.Run(context.Background())
 	if err != nil {
 		logger.Println(err)
