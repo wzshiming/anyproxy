@@ -27,7 +27,7 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 	tmp := pattern.Pattern[pattern.HTTP]
 	patterns = make([]string, 0, len(tmp)+1)
 	for _, t := range tmp {
-		patterns = append(patterns, t+"/")
+		patterns = append(patterns, t+"/debug/")
 	}
 	s := http.Server{
 		BaseContext: func(listener net.Listener) context.Context {
