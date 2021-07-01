@@ -9,7 +9,6 @@ import (
 	"net/url"
 
 	"github.com/wzshiming/anyproxy"
-	"github.com/wzshiming/anyproxy/internal/warpping"
 	"github.com/wzshiming/cmux/pattern"
 )
 
@@ -37,5 +36,5 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 		ErrorLog: logger,
 		Handler:  mux,
 	}
-	return warpping.NewWarpHttpConn(&s), patterns, nil
+	return anyproxy.NewHttpServeConn(&s), patterns, nil
 }

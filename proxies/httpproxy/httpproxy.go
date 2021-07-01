@@ -7,7 +7,6 @@ import (
 	"net/url"
 
 	"github.com/wzshiming/anyproxy"
-	"github.com/wzshiming/anyproxy/internal/warpping"
 	"github.com/wzshiming/cmux/pattern"
 	"github.com/wzshiming/httpproxy"
 )
@@ -36,5 +35,5 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 	s.ProxyDial = dial.DialContext
 	s.BytesPool = pool
 
-	return warpping.NewWarpHttpConn(&s.Server), patterns, nil
+	return anyproxy.NewHttpServeConn(&s.Server), patterns, nil
 }

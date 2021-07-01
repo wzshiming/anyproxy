@@ -1,12 +1,10 @@
-package warpping
+package anyproxy
 
 import (
 	"errors"
 	"net"
 	"net/http"
 	"sync"
-
-	"github.com/wzshiming/anyproxy"
 )
 
 var ErrNetClosing = errors.New("use of closed network connection")
@@ -17,7 +15,7 @@ type singleConnListener struct {
 	once sync.Once
 }
 
-func NewSingleConnListener(conn net.Conn) net.Listener {
+func newSingleConnListener(conn net.Conn) net.Listener {
 	ch := make(chan net.Conn, 1)
 	ch <- conn
 	return &singleConnListener{
@@ -62,14 +60,14 @@ func (c *connCloser) Close() error {
 	return c.Conn.Close()
 }
 
-type warpHttpConn struct {
+type httpServeConn struct {
 	*http.Server
 }
 
-func NewWarpHttpConn(s *http.Server) anyproxy.ServeConn {
-	return &warpHttpConn{s}
+func NewHttpServeConn(s *http.Server) ServeConn {
+	return &httpServeConn{s}
 }
 
-func (w warpHttpConn) ServeConn(conn net.Conn) {
-	w.Serve(NewSingleConnListener(conn))
+func (w httpServeConn) ServeConn(conn net.Conn) {
+	w.Serve(newSingleConnListener(conn))
 }
