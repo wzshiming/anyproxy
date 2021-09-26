@@ -2,7 +2,6 @@ package httpproxy
 
 import (
 	"context"
-	"log"
 	"net"
 	"net/url"
 
@@ -13,7 +12,7 @@ import (
 
 var patterns = append(pattern.Pattern[pattern.HTTP], pattern.Pattern[pattern.HTTP2]...)
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger *log.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
+func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger anyproxy.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
 	s, err := httpproxy.NewSimpleServer(sch + "://" + address)
 	if err != nil {
 		return nil, nil, err
@@ -31,7 +30,7 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 			return auth[username] == password
 		})
 	}
-	s.Server.ErrorLog = logger
+	s.Logger = logger
 	s.ProxyDial = dial.DialContext
 	s.BytesPool = pool
 

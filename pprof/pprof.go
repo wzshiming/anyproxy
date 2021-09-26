@@ -2,7 +2,6 @@ package pprof
 
 import (
 	"context"
-	"log"
 	"net"
 	"net/http"
 	"net/http/pprof"
@@ -14,7 +13,7 @@ import (
 
 const prefix = "/debug/pprof/"
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger *log.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
+func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger anyproxy.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc(prefix+"", pprof.Index)
 	mux.HandleFunc(prefix+"cmdline", pprof.Cmdline)
@@ -33,8 +32,7 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 		BaseContext: func(listener net.Listener) context.Context {
 			return ctx
 		},
-		ErrorLog: logger,
-		Handler:  mux,
+		Handler: mux,
 	}
 	return anyproxy.NewHttpServeConn(&s), patterns, nil
 }

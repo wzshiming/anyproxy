@@ -2,7 +2,6 @@ package socks5
 
 import (
 	"context"
-	"log"
 	"net/url"
 
 	"github.com/wzshiming/anyproxy"
@@ -12,7 +11,7 @@ import (
 
 var patterns = pattern.Pattern[pattern.SOCKS5]
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger *log.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
+func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger anyproxy.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
 	s, err := socks5.NewSimpleServer(sch + "://" + address)
 	if err != nil {
 		return nil, nil, err

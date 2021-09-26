@@ -3,7 +3,6 @@ package anyproxy
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"net/url"
 
@@ -23,7 +22,7 @@ func Register(scheme string, fun SchemeFunc) {
 	schemeMap[scheme] = fun
 }
 
-type SchemeFunc func(ctx context.Context, sch, address string, users []*url.Userinfo, dial Dialer, logger *log.Logger, pool BytesPool) (ServeConn, []string, error)
+type SchemeFunc func(ctx context.Context, sch, address string, users []*url.Userinfo, dial Dialer, logger Logger, pool BytesPool) (ServeConn, []string, error)
 
 type ServeConn interface {
 	ServeConn(conn net.Conn)
@@ -37,7 +36,7 @@ type proxyURL interface {
 	ProxyURL() string
 }
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial Dialer, logger *log.Logger, pool BytesPool) (ServeConn, []string, error) {
+func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial Dialer, logger Logger, pool BytesPool) (ServeConn, []string, error) {
 	scheme, ok := schemeMap[sch]
 	if !ok || scheme == nil {
 		return nil, nil, fmt.Errorf("can't support scheme %q", sch)

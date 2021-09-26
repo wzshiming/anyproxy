@@ -3,7 +3,6 @@ package anyproxy
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 	"net/url"
 	"sort"
@@ -20,7 +19,11 @@ type AnyProxy struct {
 	proxies map[string]*Host
 }
 
-func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger *log.Logger, pool BytesPool) (*AnyProxy, error) {
+type Logger interface {
+	Println(v ...interface{})
+}
+
+func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger Logger, pool BytesPool) (*AnyProxy, error) {
 	proxies := map[string]*Host{}
 	users := map[string][]*url.Userinfo{}
 	for _, addr := range addrs {
