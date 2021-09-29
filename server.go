@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/url"
 
+	"github.com/wzshiming/cmux"
 	_ "github.com/wzshiming/shadowsocks/init"
 )
 
@@ -42,4 +43,31 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 		return nil, nil, fmt.Errorf("can't support scheme %q", sch)
 	}
 	return scheme(ctx, sch, address, users, dial, logger, pool)
+}
+
+func NewServeConnWithAllScheme(ctx context.Context, address string, users []*url.Userinfo, dial Dialer, logger Logger, pool BytesPool) (ServeConn, []string, error) {
+	c := cmux.NewCMux()
+	for _, sch := range ListScheme() {
+		s, patterns, err := NewServeConn(ctx, sch, address, users, dial, logger, pool)
+		if patterns == nil {
+			err = c.NotFound(s)
+			if err != nil {
+				return nil, nil, err
+			}
+		} else {
+			err = c.HandlePrefix(s, patterns...)
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+	}
+	return c, nil, nil
+}
+
+func ListScheme() []string {
+	schemes := make([]string, 0, len(schemeMap))
+	for sch := range schemeMap {
+		schemes = append(schemes, sch)
+	}
+	return schemes
 }
