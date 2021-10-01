@@ -26,7 +26,7 @@ func main() {
 
 	addrs := flag.Args()
 	if address != "" {
-		addrs = append(addrs, "http://"+address, "socks4://"+address, "socks5://"+address, "pprof://"+address)
+		addrs = append(addrs, "http://"+address, "socks4://"+address, "socks5://"+address, "ssh://"+address, "pprof://"+address)
 	}
 
 	svc, err := anyproxy.NewAnyProxy(context.Background(), addrs, &dialer, logger, nil)
