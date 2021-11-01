@@ -9,8 +9,8 @@ github.com/wzshiming/shadowsocks v0.3.1 h1:K35RBGrn8OM1XwvpWOCeHGsbb0ZpQTOuBCO4G
 github.com/wzshiming/shadowsocks v0.3.1/go.mod h1:56WQwfUpgC/HMhZFNOVTBCP9nbMvL5rAepKRIkSKPsg=
 github.com/wzshiming/socks4 v0.3.1 h1:1QiCztWWvD5o+VQlpNKrkK1qM8NC2mo6LoeEJc1zUuY=
 github.com/wzshiming/socks4 v0.3.1/go.mod h1:YEPfhjf/4JezwdTmgXZU+UX+A2KvD05quzhsUBVMNA0=
-github.com/wzshiming/socks5 v0.3.1 h1:/cLISpU9TsbM8oMskJ8WY1vfkNYu1Q3UbSmwY8JFl3Y=
-github.com/wzshiming/socks5 v0.3.1/go.mod h1:BvCAqlzocQN5xwLjBZDBbvWlrx8sCYSSbHEOf2wZgT0=
+github.com/wzshiming/socks5 v0.4.0 h1:2XCLf91ReMn/ieDK/esCxbO8l68/AfX5YX9kE/VZ4rA=
+github.com/wzshiming/socks5 v0.4.0/go.mod h1:BvCAqlzocQN5xwLjBZDBbvWlrx8sCYSSbHEOf2wZgT0=
 github.com/wzshiming/sshd v0.1.0 h1:qwayh3xmWl9rKnrPQKjKDfuIO8idFdMOYno8y1WVgcc=
 github.com/wzshiming/sshd v0.1.0/go.mod h1:1sQ9cDYmq9xyRQbGh8OB9186sJXLRW8qlPkiADMn5iU=
 github.com/wzshiming/sshproxy v0.1.2 h1:svtCcWg7k8GYs8RHG9XK6ZQ7XsElK7jV73xpN3N/37Q=
