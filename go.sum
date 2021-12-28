@@ -13,8 +13,8 @@ github.com/wzshiming/socks5 v0.4.0 h1:2XCLf91ReMn/ieDK/esCxbO8l68/AfX5YX9kE/VZ4r
 github.com/wzshiming/socks5 v0.4.0/go.mod h1:BvCAqlzocQN5xwLjBZDBbvWlrx8sCYSSbHEOf2wZgT0=
 github.com/wzshiming/sshd v0.1.1 h1:+RAx3lsjtWhk1/DcOAPEIPiuogkvL2VQGTt8J5MD0Ow=
 github.com/wzshiming/sshd v0.1.1/go.mod h1:7+xrQ+XMfrKmInssZuqw1HDHGper+yWKnCAi4uljLns=
-github.com/wzshiming/sshproxy v0.1.3 h1:DNLtSZnqxTd2jFJ/unnb+N3XtfB+DQKUS+tQV23okRU=
-github.com/wzshiming/sshproxy v0.1.3/go.mod h1:XhfRqBSpSLT5TL//UvvXP9ppHpH8eNTkkRaoxirzLmc=
+github.com/wzshiming/sshproxy v0.1.4 h1:3qexD7KFNO4qF8S1qdbeSjpe8FeiCunc4GKaIsEFFKA=
+github.com/wzshiming/sshproxy v0.1.4/go.mod h1:XhfRqBSpSLT5TL//UvvXP9ppHpH8eNTkkRaoxirzLmc=
 github.com/wzshiming/trie v0.0.1 h1:6xnhRyO5tZWR6aKjEpFfm8KSNNHYsNbpKrY1+NdyHME=
 github.com/wzshiming/trie v0.0.1/go.mod h1:Z20IrQFTHnjWz//dssIoiEPWInBZFyuFlPOFPxV0Rec=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
