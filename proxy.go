@@ -137,6 +137,10 @@ func (h *Host) ListenAndServe(network, address string) error {
 	if err != nil {
 		return err
 	}
+	return h.Serve(listener)
+}
+
+func (h *Host) Serve(listener net.Listener) error {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
