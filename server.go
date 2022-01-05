@@ -22,7 +22,14 @@ func Register(scheme string, fun SchemeFunc) {
 	schemeMap[scheme] = fun
 }
 
-type SchemeFunc func(ctx context.Context, sch, address string, users []*url.Userinfo, dial Dialer, logger Logger, pool BytesPool) (ServeConn, []string, error)
+type Config struct {
+	Users     []*url.Userinfo
+	Dialer    Dialer
+	Logger    Logger
+	BytesPool BytesPool
+}
+
+type SchemeFunc func(ctx context.Context, scheme string, address string, conf *Config) (ServeConn, []string, error)
 
 type ServeConn interface {
 	ServeConn(conn net.Conn)
@@ -36,10 +43,10 @@ type proxyURL interface {
 	ProxyURL() string
 }
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial Dialer, logger Logger, pool BytesPool) (ServeConn, []string, error) {
-	scheme, ok := schemeMap[sch]
-	if !ok || scheme == nil {
-		return nil, nil, fmt.Errorf("can't support scheme %q", sch)
+func NewServeConn(ctx context.Context, scheme string, address string, conf *Config) (ServeConn, []string, error) {
+	sch, ok := schemeMap[scheme]
+	if !ok || sch == nil {
+		return nil, nil, fmt.Errorf("can't support scheme %q", scheme)
 	}
-	return scheme(ctx, sch, address, users, dial, logger, pool)
+	return sch(ctx, scheme, address, conf)
 }

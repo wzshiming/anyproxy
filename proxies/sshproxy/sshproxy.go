@@ -3,7 +3,6 @@ package sshproxy
 import (
 	"context"
 	"fmt"
-	"net/url"
 
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
@@ -13,14 +12,14 @@ import (
 
 var patterns = pattern.Pattern[pattern.SSH]
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger anyproxy.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
-	s, err := sshproxy.NewSimpleServer(sch + "://" + address)
+func NewServeConn(ctx context.Context, scheme string, address string, conf *anyproxy.Config) (anyproxy.ServeConn, []string, error) {
+	s, err := sshproxy.NewSimpleServer(scheme + "://" + address)
 	if err != nil {
 		return nil, nil, err
 	}
-	if users != nil {
+	if conf.Users != nil {
 		auth := map[string]string{}
-		for _, user := range users {
+		for _, user := range conf.Users {
 			password, _ := user.Password()
 			auth[user.Username()] = password
 		}
@@ -33,8 +32,10 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 		s.ServerConfig.NoClientAuth = false
 	}
 	s.Context = ctx
-	s.Logger = logger
-	s.ProxyDial = dial.DialContext
-	s.BytesPool = pool
+	s.Logger = conf.Logger
+	if conf.Dialer != nil {
+		s.ProxyDial = conf.Dialer.DialContext
+	}
+	s.BytesPool = conf.BytesPool
 	return s, patterns, nil
 }

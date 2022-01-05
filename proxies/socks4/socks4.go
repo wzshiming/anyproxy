@@ -2,7 +2,6 @@ package socks4
 
 import (
 	"context"
-	"net/url"
 
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
@@ -11,14 +10,14 @@ import (
 
 var patterns = pattern.Pattern[pattern.SOCKS4]
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger anyproxy.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
-	s, err := socks4.NewSimpleServer(sch + "://" + address)
+func NewServeConn(ctx context.Context, scheme string, address string, conf *anyproxy.Config) (anyproxy.ServeConn, []string, error) {
+	s, err := socks4.NewSimpleServer(scheme + "://" + address)
 	if err != nil {
 		return nil, nil, err
 	}
-	if users != nil {
+	if conf.Users != nil {
 		auth := map[string]struct{}{}
-		for _, user := range users {
+		for _, user := range conf.Users {
 			auth[user.Username()] = struct{}{}
 		}
 		s.Authentication = socks4.AuthenticationFunc(func(cmd socks4.Command, username string) bool {
@@ -27,8 +26,10 @@ func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinf
 		})
 	}
 	s.Context = ctx
-	s.Logger = logger
-	s.ProxyDial = dial.DialContext
-	s.BytesPool = pool
+	s.Logger = conf.Logger
+	if conf.Dialer != nil {
+		s.ProxyDial = conf.Dialer.DialContext
+	}
+	s.BytesPool = conf.BytesPool
 	return s, patterns, nil
 }

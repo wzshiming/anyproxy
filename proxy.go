@@ -23,7 +23,10 @@ type Logger interface {
 	Println(v ...interface{})
 }
 
-func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger Logger, pool BytesPool) (*AnyProxy, error) {
+func NewAnyProxy(ctx context.Context, addrs []string, conf *Config) (*AnyProxy, error) {
+	if conf == nil {
+		conf = &Config{}
+	}
 	proxies := map[string]*Host{}
 	users := map[string][]*url.Userinfo{}
 	for _, addr := range addrs {
@@ -40,8 +43,10 @@ func NewAnyProxy(ctx context.Context, addrs []string, dial Dialer, logger Logger
 				users[unique] = append(users[unique], u.User)
 			}
 		}
+		hostconf := *conf
+		hostconf.Users = append(users[unique], hostconf.Users...)
 
-		s, patterns, err := NewServeConn(ctx, u.Scheme, u.Host, users[unique], dial, logger, pool)
+		s, patterns, err := NewServeConn(ctx, u.Scheme, u.Host, &hostconf)
 		if err != nil {
 			return nil, err
 		}

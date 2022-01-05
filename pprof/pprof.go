@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"net/http/pprof"
-	"net/url"
 
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
@@ -13,7 +12,7 @@ import (
 
 const prefix = "/debug/pprof/"
 
-func NewServeConn(ctx context.Context, sch, address string, users []*url.Userinfo, dial anyproxy.Dialer, logger anyproxy.Logger, pool anyproxy.BytesPool) (anyproxy.ServeConn, []string, error) {
+func NewServeConn(ctx context.Context, scheme string, address string, conf *anyproxy.Config) (anyproxy.ServeConn, []string, error) {
 	mux := http.NewServeMux()
 	mux.HandleFunc(prefix+"", pprof.Index)
 	mux.HandleFunc(prefix+"cmdline", pprof.Cmdline)

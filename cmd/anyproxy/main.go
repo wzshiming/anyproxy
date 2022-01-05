@@ -29,7 +29,12 @@ func main() {
 		addrs = append(addrs, "http://"+address, "socks4://"+address, "socks5://"+address, "ssh://"+address, "pprof://"+address)
 	}
 
-	svc, err := anyproxy.NewAnyProxy(context.Background(), addrs, &dialer, logger, nil)
+	conf := anyproxy.Config{
+		Dialer: &dialer,
+		Logger: logger,
+	}
+
+	svc, err := anyproxy.NewAnyProxy(context.Background(), addrs, &conf)
 	if err != nil {
 		logger.Println(err)
 		return
