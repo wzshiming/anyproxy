@@ -23,10 +23,11 @@ func Register(scheme string, fun SchemeFunc) {
 }
 
 type Config struct {
-	Users     []*url.Userinfo
-	Dialer    Dialer
-	Logger    Logger
-	BytesPool BytesPool
+	Users        []*url.Userinfo
+	Dialer       Dialer
+	ListenConfig ListenConfig
+	Logger       Logger
+	BytesPool    BytesPool
 }
 
 type SchemeFunc func(ctx context.Context, scheme string, address string, conf *Config) (ServeConn, []string, error)

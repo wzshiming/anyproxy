@@ -30,6 +30,9 @@ func NewServeConn(ctx context.Context, scheme string, address string, conf *anyp
 	if conf.Dialer != nil {
 		s.ProxyDial = conf.Dialer.DialContext
 	}
+	if conf.ListenConfig != nil {
+		s.ProxyListen = conf.ListenConfig.Listen
+	}
 	s.BytesPool = conf.BytesPool
 	return s, patterns, nil
 }
