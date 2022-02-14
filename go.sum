@@ -11,10 +11,10 @@ github.com/wzshiming/socks4 v0.3.1 h1:1QiCztWWvD5o+VQlpNKrkK1qM8NC2mo6LoeEJc1zUu
 github.com/wzshiming/socks4 v0.3.1/go.mod h1:YEPfhjf/4JezwdTmgXZU+UX+A2KvD05quzhsUBVMNA0=
 github.com/wzshiming/socks5 v0.4.1 h1:MZt9cIHSl3vsLufZDR3aZO3hbpCrylWk5XKAuUrgzbQ=
 github.com/wzshiming/socks5 v0.4.1/go.mod h1:BvCAqlzocQN5xwLjBZDBbvWlrx8sCYSSbHEOf2wZgT0=
-github.com/wzshiming/sshd v0.1.3 h1:reSEx+5NPcNS0cLxipBlW3DeM1Dv4H3KBXUUHc9bnMw=
-github.com/wzshiming/sshd v0.1.3/go.mod h1:7+xrQ+XMfrKmInssZuqw1HDHGper+yWKnCAi4uljLns=
-github.com/wzshiming/sshproxy v0.1.6 h1:7Rcik6C+c9M/8eQsU6f2Nrsf0TMYmsoUIFp32X6vQOQ=
-github.com/wzshiming/sshproxy v0.1.6/go.mod h1:O0cHCYdCm66GVB4HR+vbjXXZGxXp/XZjLABxgNB6J5I=
+github.com/wzshiming/sshd v0.1.5 h1:x1A0IPK8V6JXzKxP3G6gMidVYu/QCcHUALjwND6mTgI=
+github.com/wzshiming/sshd v0.1.5/go.mod h1:7+xrQ+XMfrKmInssZuqw1HDHGper+yWKnCAi4uljLns=
+github.com/wzshiming/sshproxy v0.1.8 h1:JJrbPJiXXZKfJgYuRitJSREpgQLiS+3rYOj187QTX3M=
+github.com/wzshiming/sshproxy v0.1.8/go.mod h1:ywnwd+2TqqB8xKkCiiawiZsFGnFmTFu0KnEixuJxH4c=
 github.com/wzshiming/trie v0.0.1 h1:6xnhRyO5tZWR6aKjEpFfm8KSNNHYsNbpKrY1+NdyHME=
 github.com/wzshiming/trie v0.0.1/go.mod h1:Z20IrQFTHnjWz//dssIoiEPWInBZFyuFlPOFPxV0Rec=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
