@@ -4,6 +4,11 @@ import (
 	"context"
 	"fmt"
 
+	_ "github.com/wzshiming/sshd/directstreamlocal"
+	_ "github.com/wzshiming/sshd/directtcp"
+	_ "github.com/wzshiming/sshd/streamlocalforward"
+	_ "github.com/wzshiming/sshd/tcpforward"
+
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
 	"github.com/wzshiming/sshproxy"
