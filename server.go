@@ -23,6 +23,7 @@ func Register(scheme string, fun SchemeFunc) {
 }
 
 type Config struct {
+	RawQueries   []string
 	Users        []*url.Userinfo
 	Dialer       Dialer
 	ListenConfig ListenConfig

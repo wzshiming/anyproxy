@@ -3,6 +3,7 @@ package sshproxy
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	_ "github.com/wzshiming/sshd/directstreamlocal"
 	_ "github.com/wzshiming/sshd/directtcp"
@@ -18,7 +19,7 @@ import (
 var patterns = pattern.Pattern[pattern.SSH]
 
 func NewServeConn(ctx context.Context, scheme string, address string, conf *anyproxy.Config) (anyproxy.ServeConn, []string, error) {
-	s, err := sshproxy.NewSimpleServer(scheme + "://" + address)
+	s, err := sshproxy.NewSimpleServer(scheme + "://" + address + "?" + strings.Join(conf.RawQueries, "&"))
 	if err != nil {
 		return nil, nil, err
 	}

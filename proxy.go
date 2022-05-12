@@ -48,6 +48,7 @@ func NewAnyProxy(ctx context.Context, addrs []string, conf *Config) (*AnyProxy, 
 			}
 		}
 		hostconf := *conf
+		hostconf.RawQueries = append(hostconf.RawQueries, u.RawQuery)
 		hostconf.Users = append(users[unique], hostconf.Users...)
 
 		s, patterns, err := NewServeConn(ctx, u.Scheme, u.Host, &hostconf)
