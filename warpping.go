@@ -5,6 +5,8 @@ import (
 	"net"
 	"net/http"
 	"sync"
+
+	"github.com/wzshiming/httpproxy"
 )
 
 var ErrNetClosing = errors.New("use of closed network connection")
@@ -69,5 +71,7 @@ func NewHttpServeConn(s *http.Server) ServeConn {
 }
 
 func (w httpServeConn) ServeConn(conn net.Conn) {
-	w.Serve(newSingleConnListener(conn))
+	listener := newSingleConnListener(conn)
+	listener = httpproxy.NewListenerCompatibilityReadDeadline(listener)
+	w.Serve(listener)
 }
