@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/wzshiming/cmux v0.3.1
-	github.com/wzshiming/httpproxy v0.5.2
+	github.com/wzshiming/httpproxy v0.5.3
 	github.com/wzshiming/shadowsocks v0.3.2
 	github.com/wzshiming/socks4 v0.3.2
 	github.com/wzshiming/socks5 v0.4.2

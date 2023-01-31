@@ -71,7 +71,7 @@ func NewHttpServeConn(s *http.Server) ServeConn {
 }
 
 func (w httpServeConn) ServeConn(conn net.Conn) {
+	conn = httpproxy.NewConnCompatibilityReadDeadline(conn)
 	listener := newSingleConnListener(conn)
-	listener = httpproxy.NewListenerCompatibilityReadDeadline(listener)
 	w.Serve(listener)
 }
