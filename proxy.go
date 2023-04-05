@@ -21,6 +21,7 @@ type ListenConfig interface {
 
 type AnyProxy struct {
 	proxies map[string]*Host
+	conf    *Config
 }
 
 type Logger interface {
@@ -30,7 +31,14 @@ type Logger interface {
 func NewAnyProxy(ctx context.Context, addrs []string, conf *Config) (*AnyProxy, error) {
 	if conf == nil {
 		conf = &Config{}
+	} else {
+		c := *conf
+		conf = &c
 	}
+	if conf.ListenConfig == nil {
+		conf.ListenConfig = &net.ListenConfig{}
+	}
+
 	proxies := map[string]*Host{}
 	users := map[string][]*url.Userinfo{}
 	for _, addr := range addrs {
@@ -59,6 +67,7 @@ func NewAnyProxy(ctx context.Context, addrs []string, conf *Config) (*AnyProxy, 
 		if !ok {
 			mux = &Host{
 				cmux: cmux.NewCMux(),
+				conf: conf,
 			}
 		}
 
@@ -78,6 +87,7 @@ func NewAnyProxy(ctx context.Context, addrs []string, conf *Config) (*AnyProxy, 
 		proxies[u.Host] = mux
 	}
 	proxy := &AnyProxy{
+		conf:    conf,
 		proxies: proxies,
 	}
 	return proxy, nil
@@ -112,7 +122,7 @@ func (a *AnyProxy) Run(ctx context.Context) error {
 		if host == nil {
 			return fmt.Errorf("not match address %q", address)
 		}
-		listener, err := net.Listen("tcp", address)
+		listener, err := a.conf.ListenConfig.Listen(ctx, "tcp", address)
 		if err != nil {
 			return err
 		}
@@ -132,6 +142,7 @@ func (a *AnyProxy) Run(ctx context.Context) error {
 type Host struct {
 	cmux    *cmux.CMux
 	proxies []string
+	conf    *Config
 }
 
 func (h *Host) ProxyURLs() []string {
@@ -143,7 +154,7 @@ func (h *Host) ServeConn(conn net.Conn) {
 }
 
 func (h *Host) ListenAndServe(network, address string) error {
-	listener, err := net.Listen(network, address)
+	listener, err := h.conf.ListenConfig.Listen(context.Background(), network, address)
 	if err != nil {
 		return err
 	}
