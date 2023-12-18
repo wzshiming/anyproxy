@@ -10,12 +10,12 @@ require (
 	github.com/wzshiming/socks5 v0.4.3
 	github.com/wzshiming/sshd v0.2.2
 	github.com/wzshiming/sshproxy v0.4.3
-	golang.org/x/crypto v0.14.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/sync v0.4.0
 )
 
 require (
 	github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da // indirect
 	github.com/wzshiming/trie v0.1.1 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
 )
