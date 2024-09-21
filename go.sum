@@ -1,8 +1,8 @@
 github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da h1:KjTM2ks9d14ZYCvmHS9iAKVt9AyzRSqNU1qabPih5BY=
 github.com/aead/chacha20 v0.0.0-20180709150244-8b13a72661da/go.mod h1:eHEWzANqSiWQsof+nXEI9bUVUyV6F53Fp89EuCh2EAA=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
-github.com/wzshiming/cmux v0.4.1 h1:+7pS6Y9zHG27PBWp7mNCu4cFRsHnkuknH0AAkW20TRY=
-github.com/wzshiming/cmux v0.4.1/go.mod h1:JgE61QfZAjEyNMX0iZo9zIKY6pr9bHVY132yYPwHW5U=
+github.com/wzshiming/cmux v0.4.2 h1:tI73lL5ztVfiqw7R5m5BkxT1+vQ2PBo/oV6qPbNGPiA=
+github.com/wzshiming/cmux v0.4.2/go.mod h1:JgE61QfZAjEyNMX0iZo9zIKY6pr9bHVY132yYPwHW5U=
 github.com/wzshiming/httpproxy v0.5.6 h1:KlpDvrdG/77DZxTXEozzM27T0JqTKuJvpu+CAu+ML+I=
 github.com/wzshiming/httpproxy v0.5.6/go.mod h1:fz+LgZAxCxm2gmWu71LYlc7KFzJvqLQ5bilEhLedJkE=
 github.com/wzshiming/shadowsocks v0.4.1 h1:tyLYtLSQs90jpMIkD+T8KuZH5foXwOH0ZjxSOb45orI=
