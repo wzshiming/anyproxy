@@ -9,7 +9,7 @@ require (
 	github.com/wzshiming/socks4 v0.3.2
 	github.com/wzshiming/socks5 v0.5.1
 	github.com/wzshiming/sshd v0.2.3
-	github.com/wzshiming/sshproxy v0.4.4
+	github.com/wzshiming/sshproxy v0.4.5
 	golang.org/x/crypto v0.27.0
 	golang.org/x/sync v0.8.0
 )
