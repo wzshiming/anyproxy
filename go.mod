@@ -4,14 +4,14 @@ go 1.18
 
 require (
 	github.com/wzshiming/cmux v0.4.2
-	github.com/wzshiming/httpproxy v0.5.6
-	github.com/wzshiming/shadowsocks v0.4.1
-	github.com/wzshiming/socks4 v0.3.2
-	github.com/wzshiming/socks5 v0.5.1
-	github.com/wzshiming/sshd v0.2.3
-	github.com/wzshiming/sshproxy v0.4.5
+	github.com/wzshiming/httpproxy v0.5.7
+	github.com/wzshiming/shadowsocks v0.4.2
+	github.com/wzshiming/socks4 v0.3.3
+	github.com/wzshiming/socks5 v0.5.2
+	github.com/wzshiming/sshd v0.2.4
+	github.com/wzshiming/sshproxy v0.5.2
 	golang.org/x/crypto v0.31.0
-	golang.org/x/sync v0.8.0
+	golang.org/x/sync v0.10.0
 )
 
 require (
