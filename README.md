@@ -6,7 +6,6 @@ Proxy server supporting http/ssh/socks4/socks5/shadowsocks on port
 [![Go Report Card](https://goreportcard.com/badge/github.com/wzshiming/anyproxy)](https://goreportcard.com/report/github.com/wzshiming/anyproxy)
 [![GoDoc](https://godoc.org/github.com/wzshiming/anyproxy?status.svg)](https://godoc.org/github.com/wzshiming/anyproxy)
 [![GitHub license](https://img.shields.io/github/license/wzshiming/anyproxy.svg)](https://github.com/wzshiming/anyproxy/blob/master/LICENSE)
-[![gocover.io](https://gocover.io/_badge/github.com/wzshiming/anyproxy)](https://gocover.io/github.com/wzshiming/anyproxy)
 
 This project is to add protocol support for the [Bridge](https://github.com/wzshiming/bridge), or it can be used alone
 
