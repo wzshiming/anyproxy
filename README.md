@@ -10,15 +10,6 @@ Proxy server supporting http/ssh/socks4/socks5/shadowsocks on port
 
 This project is to add protocol support for the [Bridge](https://github.com/wzshiming/bridge), or it can be used alone
 
-The following is the implementation of other proxy protocols
-
-- [Socks4](https://github.com/wzshiming/socks4)
-- [Socks5](https://github.com/wzshiming/socks5)
-- [HTTP Proxy](https://github.com/wzshiming/httpproxy)
-- [Shadow Socks](https://github.com/wzshiming/shadowsocks)
-- [SSH Proxy](https://github.com/wzshiming/sshproxy)
-- [Emux](https://github.com/wzshiming/emux)
-
 ## Usage
 
 [API Documentation](https://godoc.org/github.com/wzshiming/anyproxy)
