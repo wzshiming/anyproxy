@@ -3,7 +3,6 @@
 Proxy server supporting http/ssh/socks4/socks5/shadowsocks on port
 
 [![Build](https://github.com/wzshiming/anyproxy/actions/workflows/go-cross-build.yml/badge.svg)](https://github.com/wzshiming/anyproxy/actions/workflows/go-cross-build.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/wzshiming/anyproxy)](https://goreportcard.com/report/github.com/wzshiming/anyproxy)
 [![GoDoc](https://godoc.org/github.com/wzshiming/anyproxy?status.svg)](https://godoc.org/github.com/wzshiming/anyproxy)
 [![GitHub license](https://img.shields.io/github/license/wzshiming/anyproxy.svg)](https://github.com/wzshiming/anyproxy/blob/master/LICENSE)
 
