@@ -4,12 +4,12 @@ go 1.25.0
 
 require (
 	github.com/wzshiming/cmux v0.4.2
-	github.com/wzshiming/httpproxy v0.5.7
-	github.com/wzshiming/shadowsocks v0.4.2
-	github.com/wzshiming/socks4 v0.4.0
-	github.com/wzshiming/socks5 v0.7.0
+	github.com/wzshiming/httpproxy v0.6.1
+	github.com/wzshiming/shadowsocks v0.5.0
+	github.com/wzshiming/socks4 v0.5.0
+	github.com/wzshiming/socks5 v0.8.0
 	github.com/wzshiming/sshd v0.2.5
-	github.com/wzshiming/sshproxy v0.5.4
+	github.com/wzshiming/sshproxy v0.7.0
 	golang.org/x/crypto v0.52.0
 	golang.org/x/sync v0.19.0
 )
