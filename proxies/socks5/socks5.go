@@ -22,7 +22,8 @@ func NewServeConn(ctx context.Context, scheme string, address string, conf *anyp
 			auth[user.Username()] = password
 		}
 		s.Authentication = socks5.AuthenticationFunc(func(cmd socks5.Command, username, password string) bool {
-			return auth[username] == password
+			expected, ok := auth[username]
+			return ok && expected == password
 		})
 	}
 	s.Context = ctx

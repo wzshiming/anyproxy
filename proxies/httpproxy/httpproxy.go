@@ -26,7 +26,8 @@ func NewServeConn(ctx context.Context, scheme string, address string, conf *anyp
 			auth[user.Username()] = password
 		}
 		s.Authentication = httpproxy.BasicAuthFunc(func(username, password string) bool {
-			return auth[username] == password
+			expected, ok := auth[username]
+			return ok && expected == password
 		})
 	}
 	s.Logger = conf.Logger
