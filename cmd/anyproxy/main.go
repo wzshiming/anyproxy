@@ -39,7 +39,7 @@ func main() {
 		logger.Println(err)
 		return
 	}
-	logger.Printf("listen %s", addrs)
+	logger.Printf("listen %s", svc.Hosts())
 	err = svc.Run(context.Background())
 	if err != nil {
 		logger.Println(err)
