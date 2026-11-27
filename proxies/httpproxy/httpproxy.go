@@ -2,7 +2,6 @@ package httpproxy
 
 import (
 	"context"
-	"net"
 
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
@@ -16,9 +15,7 @@ func NewServeConn(ctx context.Context, scheme string, address string, conf *anyp
 	if err != nil {
 		return nil, nil, err
 	}
-	s.Server.BaseContext = func(listener net.Listener) context.Context {
-		return ctx
-	}
+	s.Context = ctx
 	if conf.Users != nil {
 		auth := map[string]string{}
 		for _, user := range conf.Users {
@@ -35,5 +32,5 @@ func NewServeConn(ctx context.Context, scheme string, address string, conf *anyp
 		s.ProxyDial = conf.Dialer.DialContext
 	}
 	s.BytesPool = conf.BytesPool
-	return anyproxy.NewHttpServeConn(&s.Server), patterns, nil
+	return &s.Server, patterns, nil
 }
