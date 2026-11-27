@@ -2,13 +2,29 @@ package httpproxy
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
 	"github.com/wzshiming/httpproxy"
 )
 
-var patterns = append(pattern.Pattern[pattern.HTTP], pattern.Pattern[pattern.HTTP2]...)
+// patterns matches the requests of HTTP/1.x proxy only, which is CONNECT
+// and the request with an absolute URL of http.
+var patterns = proxyPatterns()
+
+func proxyPatterns() []string {
+	methods := pattern.Pattern[pattern.HTTP]
+	patterns := make([]string, 0, len(methods))
+	for _, method := range methods {
+		if method == http.MethodConnect+" " {
+			patterns = append(patterns, method)
+			continue
+		}
+		patterns = append(patterns, method+"http://")
+	}
+	return patterns
+}
 
 func NewServeConn(ctx context.Context, scheme string, address string, conf *anyproxy.Config) (anyproxy.ServeConn, []string, error) {
 	s, err := httpproxy.NewSimpleServer(scheme + "://" + address)
