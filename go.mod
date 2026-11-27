@@ -3,7 +3,7 @@ module github.com/wzshiming/anyproxy
 go 1.26.0
 
 require (
-	github.com/wzshiming/cmux v0.5.0
+	github.com/wzshiming/cmux v0.6.0
 	github.com/wzshiming/httpproxy v0.7.0
 	github.com/wzshiming/shadowsocks v0.6.0
 	github.com/wzshiming/socks4 v0.6.0
