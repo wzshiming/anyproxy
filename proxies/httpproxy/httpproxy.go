@@ -2,23 +2,22 @@ package httpproxy
 
 import (
 	"context"
-	"net"
 
 	"github.com/wzshiming/anyproxy"
 	"github.com/wzshiming/cmux/pattern"
 	"github.com/wzshiming/httpproxy"
 )
 
-var patterns = append(pattern.Pattern[pattern.HTTP], pattern.Pattern[pattern.HTTP2]...)
+// patterns matches the requests of HTTP/1.x proxy only, which is CONNECT
+// and the request with an absolute URL of http.
+var patterns = pattern.Pattern[pattern.HTTP_PROXY]
 
 func NewServeConn(ctx context.Context, scheme string, address string, conf *anyproxy.Config) (anyproxy.ServeConn, []string, error) {
 	s, err := httpproxy.NewSimpleServer(scheme + "://" + address)
 	if err != nil {
 		return nil, nil, err
 	}
-	s.Server.BaseContext = func(listener net.Listener) context.Context {
-		return ctx
-	}
+	s.Context = ctx
 	if conf.Users != nil {
 		auth := map[string]string{}
 		for _, user := range conf.Users {
@@ -35,5 +34,5 @@ func NewServeConn(ctx context.Context, scheme string, address string, conf *anyp
 		s.ProxyDial = conf.Dialer.DialContext
 	}
 	s.BytesPool = conf.BytesPool
-	return anyproxy.NewHttpServeConn(&s.Server), patterns, nil
+	return &s.Server, patterns, nil
 }
