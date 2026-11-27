@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 	"sync"
-	"time"
 )
 
 var ErrNetClosing = errors.New("use of closed network connection")
@@ -70,23 +69,6 @@ func NewHttpServeConn(s *http.Server) ServeConn {
 }
 
 func (w httpServeConn) ServeConn(conn net.Conn) {
-	conn = connCompatibilityReadDeadline{conn}
 	listener := newSingleConnListener(conn)
 	w.Serve(listener)
-}
-
-// aLongTimeAgo is the read deadline net/http sets to abort a pending read.
-var aLongTimeAgo = time.Unix(1, 0)
-
-// connCompatibilityReadDeadline keeps a wrapped net.Conn working with
-// net/http, which aborts the pending read by a deadline in the past.
-type connCompatibilityReadDeadline struct {
-	net.Conn
-}
-
-func (d connCompatibilityReadDeadline) SetReadDeadline(t time.Time) error {
-	if t.Equal(aLongTimeAgo) {
-		t = time.Now().Add(1 * time.Second)
-	}
-	return d.Conn.SetReadDeadline(t)
 }
